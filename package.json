@@ -1,0 +1,28 @@
+{
+  "name": "tr_doviz_bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "currency",
+    "exchange",
+    "turkish"
+  ],
+  "author": "",
+  "license": "ISC",
+  "description": "Turkish currency, gold and crypto Telegram bot",
+  "dependencies": {
+    "axios": "^1.12.2",
+    "node-cron": "^4.2.1",
+    "node-telegram-bot-api": "^0.66.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
