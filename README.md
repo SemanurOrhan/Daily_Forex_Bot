@@ -1,4 +1,4 @@
-# 💹 DailyFXBot-TR (Turkish FX/Gold/Crypto Telegram Bot)
+# DailyFXBot-TR (Turkish FX/Gold/Crypto Telegram Bot)
 
 ## What it does
 - Live FX: USD and EUR to TRY
