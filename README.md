@@ -1,7 +1,5 @@
 # 💹 DailyFXBot-TR (Turkish FX/Gold/Crypto Telegram Bot)
 
-An English guide for a Telegram bot that serves Turkish users: get live FX (USD/EUR → TRY), gold/silver prices, and popular crypto quotes, plus a daily summary at 09:00 (Europe/Istanbul).
-
 ## What it does
 - Live FX: USD and EUR to TRY
 - Gold/Silver prices (separate commands): only gold with /altin, only silver with /gumus
