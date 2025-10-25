@@ -1,5 +1,5 @@
-const { MongoClient } = require('mongodb');
-const config = require('../config');
+const { MongoClient, ServerApiVersion } = require("mongodb");
+const config = require("../config");
 
 let client;
 let db;
@@ -7,60 +7,51 @@ let db;
 async function connect() {
   if (db) return db;
 
-  const uri = config.MONGODB_URI;
-  if (!uri) {
-    throw new Error('MONGODB_URI is not set in config');
+  if (!config.MONGODB_URI) {
+    throw new Error("MONGODB_URI tanımlı değil");
   }
-  client = new MongoClient(uri, {
-    maxPoolSize: 5,
-    serverSelectionTimeoutMS: 8000,
-    ssl: true,
-    tlsAllowInvalidCertificates: true,
+
+  client = new MongoClient(config.MONGODB_URI, {
+    serverApi: {
+      version: ServerApiVersion.v1,
+      strict: true,
+      deprecationErrors: true,
+    },
+    // TLS ile ilgili ek seçenek verme; URI yeterli.
   });
 
-  try {
-    await client.connect();
-    console.log('✅ MongoDB connection established');
-  } catch (err) {
-    console.error('❌ MongoDB connection failed:', err.message);
-    throw err;
-  }
+  await client.connect();
 
-  // Database adı
-  const dbName =
-    config.MONGODB_DB ||
-    new URL(uri).pathname.replace('/', '') ||
-    'dailyfxbot';
-  db = client.db(dbName);
+  // DB adı URI’de /DBNAME olarak verilmişse onu kullan, yoksa .env’deki MONGODB_DB
+  const dbNameFromUri = (() => {
+    try {
+      const u = new URL(config.MONGODB_URI);
+      return u.pathname && u.pathname !== "/" ? u.pathname.slice(1) : null;
+    } catch {
+      return null;
+    }
+  })();
 
-  // Subscribers koleksiyonunda index oluştur
-  const col = db.collection('subscribers');
-  await col.createIndex({ chatId: 1 }, { unique: true });
+  db = client.db(dbNameFromUri || config.MONGODB_DB);
+  await db.command({ ping: 1 });
 
-  return db;
-}
+  // Unique index (aboneler)
+  await db
+    .collection("subscribers")
+    .createIndex({ chatId: 1 }, { unique: true });
 
-function getDb() {
-  if (!db) throw new Error('MongoDB not connected. Call connect() first.');
   return db;
 }
 
 async function getCollection(name) {
-  if (!db) await connect();
-  return db.collection(name);
+  const d = await connect();
+  return d.collection(name);
 }
 
 async function disconnect() {
-  if (client) {
-    await client.close();
-    client = undefined;
-    db = undefined;
-  }
+  if (client) await client.close();
+  client = undefined;
+  db = undefined;
 }
 
-module.exports = {
-  connect,
-  getDb,
-  getCollection,
-  disconnect,
-};
+module.exports = { connect, getCollection, disconnect };
