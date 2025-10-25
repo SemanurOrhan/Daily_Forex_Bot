@@ -1,13 +1,6 @@
-const path = require('path');
-const fs = require('fs');
+require('dotenv').config();
 const { initBot } = require('./src/bot');
-
-// Ensure data directory exists
-const dataDir = path.join(__dirname, 'data');
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
-  console.log('📁 Data directory created');
-}
+ 
 
 // Handle unexpected errors
 process.on('uncaughtException', (err) => {

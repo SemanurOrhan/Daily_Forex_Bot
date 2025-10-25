@@ -3,7 +3,8 @@ const config = require('./config');
 
 const startHandler = require('./handlers/start_handler');
 const currencyHandler = require('./handlers/currency_handler');
-const goldHandler = require('./handlers/gold_and_silver_handler');
+const goldHandler = require('./handlers/gold_handler');
+const silverHandler = require('./handlers/silver_handler');
 const cryptoHandler = require('./handlers/crypto_handler');
 const subscriptionHandler = require('./handlers/subscription_handler');
 const { scheduleDaily } = require('./utils/scheduler');
@@ -14,6 +15,7 @@ function initBot() {
   startHandler.registerHandler(bot);
   currencyHandler.registerHandler(bot);
   goldHandler.registerHandler(bot);
+  silverHandler.registerHandler(bot);
   cryptoHandler.registerHandler(bot);
   subscriptionHandler.registerHandler(bot);
 

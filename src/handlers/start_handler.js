@@ -9,10 +9,10 @@ Bu bot ile güncel döviz kurları, altın fiyatları ve kripto para değerlerin
 📝 *Komutlar:*
 
 /kurlar - Güncel döviz kurlarını gösterir
-/altin - Altın ve Gümüş fiyatlarını gösterir
+/altin - Altın fiyatlarını gösterir
+/gumus - Gümüş fiyatlarını gösterir
 /kripto - Kripto para fiyatlarını gösterir
-/kur USD - Belirli bir para biriminin değerini gösterir (örnek: /kur EUR)
-/abone - Günlük döviz bildirimleri için abone olun
+/abone - Günlük 09.00 döviz bildirimleri için abone olun
 /iptal - Abonelikten çıkın
 
 Veriler CollectAPI üzerinden alınmaktadır.

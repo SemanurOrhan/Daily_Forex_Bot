@@ -40,12 +40,12 @@ function getCurrencyEmoji(code) {
 }
 
 /**
- * Altın ve gümüş verilerini formatlar
- * @param {Array} goldData - Filtrelenmiş altın/gümüş verileri
+ * Altın verilerini formatlar
+ * @param {Array} goldData - Filtrelenmiş altın verileri
  * @returns {string} Formatlanmış mesaj
  */
 function formatGoldData(goldData) {
-  const lines = ["💰 *ALTIN ve GÜMÜŞ FİYATLARI* 💰", ""];
+  const lines = ["💰 *ALTIN FİYATLARI* 💰", ""];
 
   for (const item of goldData) {
     const emoji = getGoldEmoji(item.name);
@@ -61,6 +61,90 @@ function formatGoldData(goldData) {
   lines.push(`🕒 ${new Date().toLocaleString("tr-TR")}`);
 
   return lines.join("\n");
+}
+
+/**
+ * TRY format helper
+ * @param {number} n
+ * @returns {string}
+ */
+function formatTRY(n) {
+  try {
+    return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(n);
+  } catch (_) {
+    if (typeof n === 'number' && !Number.isNaN(n)) return `${n.toFixed(2)} ₺`;
+    return `${n} ₺`;
+  }
+}
+
+/**
+ * Extract and format price fields for gold/silver items
+ * @param {Object} item
+ */
+function formatGoldSilverPrices(item) {
+  let buyStr = null;
+  let sellStr = null;
+
+  if (typeof item.buying === 'number') buyStr = formatTRY(item.buying);
+  if (typeof item.selling === 'number') sellStr = formatTRY(item.selling);
+
+  if (!buyStr && typeof item.buyingstr === 'string') {
+    buyStr = /₺|TL/i.test(item.buyingstr) ? item.buyingstr : `${item.buyingstr} ₺`;
+  }
+  if (!sellStr && typeof item.sellingstr === 'string') {
+    sellStr = /₺|TL/i.test(item.sellingstr) ? item.sellingstr : `${item.sellingstr} ₺`;
+  }
+
+  // Bazı API kayıtlarında tek bir fiyat olabilir
+  if (!buyStr && typeof item.price === 'number') buyStr = formatTRY(item.price);
+  if (!sellStr && typeof item.price === 'number') sellStr = formatTRY(item.price);
+  if (!buyStr && typeof item.pricestr === 'string') buyStr = /₺|TL/i.test(item.pricestr) ? item.pricestr : `${item.pricestr} ₺`;
+  if (!sellStr && typeof item.pricestr === 'string') sellStr = /₺|TL/i.test(item.pricestr) ? item.pricestr : `${item.pricestr} ₺`;
+
+  return { buyStr: buyStr || '-', sellStr: sellStr || '-' };
+}
+
+/**
+ * Only GOLD list formatting (TRY)
+ * @param {Array} items
+ */
+function formatGoldList(items) {
+  const lines = ["🟡 *ALTIN FİYATLARI* 🟡", ""];
+
+  for (const item of items) {
+    const { buyStr, sellStr } = formatGoldSilverPrices(item);
+    lines.push(
+      `🟡 *${item.name}*`,
+      `   Alış: ${buyStr}`,
+      `   Satış: ${sellStr}`,
+      ""
+    );
+  }
+
+  lines.push(`🕒 ${new Date().toLocaleString('tr-TR')}`);
+  return lines.join('\n');
+}
+
+/**
+ * Only SILVER list formatting (TRY)
+ * @param {Array} items
+ */
+function formatSilverList(items) {
+  const title = items && items.length > 1 ? '⚪ *GÜMÜŞ FİYATLARI* ⚪' : '⚪ *GÜMÜŞ FİYATI* ⚪';
+  const lines = [title, ""];
+
+  for (const item of items) {
+    const { buyStr, sellStr } = formatGoldSilverPrices(item);
+    lines.push(
+      `⚪ *${item.name}*`,
+      `   Alış: ${buyStr}`,
+      `   Satış: ${sellStr}`,
+      ""
+    );
+  }
+
+  lines.push(`🕒 ${new Date().toLocaleString('tr-TR')}`);
+  return lines.join('\n');
 }
 
 /**
@@ -218,6 +302,8 @@ module.exports = {
   getGoldEmoji,
   getCurrencyEmoji,
   formatGoldData,
+  formatGoldList,
+  formatSilverList,
   formatCurrencyData,
   formatSingleCurrency,
   formatCryptoData,

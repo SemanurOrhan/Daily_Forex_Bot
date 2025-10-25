@@ -1,4 +1,4 @@
-const { getGold } = require('../api/gold_and_silver_api');
+const { getGold } = require('../api/gold_api');
 const cache = require('../utils/cache');
 
 const CACHE_KEY = 'gold_data';
