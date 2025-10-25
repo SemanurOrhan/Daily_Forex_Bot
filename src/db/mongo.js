@@ -11,17 +11,29 @@ async function connect() {
   if (!uri) {
     throw new Error('MONGODB_URI is not set in config');
   }
-
   client = new MongoClient(uri, {
     maxPoolSize: 5,
     serverSelectionTimeoutMS: 8000,
+    ssl: true,
+    tlsAllowInvalidCertificates: true,
   });
 
-  await client.connect();
-  const dbName = config.MONGODB_DB || new URL(uri).pathname.replace('/', '') || 'dailyfxbot';
+  try {
+    await client.connect();
+    console.log('✅ MongoDB connection established');
+  } catch (err) {
+    console.error('❌ MongoDB connection failed:', err.message);
+    throw err;
+  }
+
+  // Database adı
+  const dbName =
+    config.MONGODB_DB ||
+    new URL(uri).pathname.replace('/', '') ||
+    'dailyfxbot';
   db = client.db(dbName);
 
-  // Ensure index for subscribers
+  // Subscribers koleksiyonunda index oluştur
   const col = db.collection('subscribers');
   await col.createIndex({ chatId: 1 }, { unique: true });
 
